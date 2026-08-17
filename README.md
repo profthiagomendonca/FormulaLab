@@ -1,10 +1,10 @@
 # FormulaLab
 
-O FormulaLab é uma ferramenta web para visualizar e interagir com fórmulas matemáticas e de física. O objetivo é ajudar no entendimento desses conceitos de forma prática, permitindo alterar os valores dos parâmetros e ver os resultados em gráficos e animações no mesmo instante.
+O FormulaLab é uma ferramenta web para visualizar e interagir com fórmulas matemáticas e de física. O objetivo é ajudar a compreender esses conceitos de forma prática, permitindo alterar os valores dos parâmetros e ver os resultados em gráficos e animações no mesmo instante.
 
 ## Como funciona
 
-As fórmulas são calculadas e desenhadas em tempo real usando SVG e JavaScript nativo, sem bibliotecas pesadas. O visual usa elementos translúcidos e cores contrastantes para destacar as variáveis que podem ser controladas pelos sliders.
+Os cálculos e gráficos são gerados em tempo real diretamente no navegador. O visual destaca as variáveis que podem ser controladas, facilitando a observação de como cada alteração afeta o resultado final.
 
 ## Conteúdo do projeto
 
@@ -54,9 +54,8 @@ Atualmente, o projeto conta com 38 tópicos divididos em duas categorias princip
 * Dilatação do Tempo
 * Gases Ideais
 
-## Como usar
+## Como acessar
 
-Para rodar o simulador no computador:
+O simulador está hospedado no Netlify e pode ser acessado diretamente pelo link:
 
-1. Baixe os arquivos do repositório.
-2. Abra o arquivo index.html no navegador de sua preferência.
+[Acesse o FormulaLab](https://formulalab.netlify.app)
