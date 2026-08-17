@@ -58,4 +58,4 @@ Atualmente, o projeto conta com 38 tópicos divididos em duas categorias princip
 
 O simulador está hospedado no Netlify e pode ser acessado diretamente pelo link:
 
-[Acesse o FormulaLab](https://formulalab.netlify.app)
+[Acesse o FormulaLab](https://formula-lab.netlify.app)
