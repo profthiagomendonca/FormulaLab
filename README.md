@@ -29,7 +29,7 @@ Atualmente, o projeto conta com 38 tópicos divididos em duas categorias princip
 * Média Ponderada
 * Curvas de Bézier
 * Tipos de Ângulos
-* Série de Fourier
+* Área do Quadrado
 * Espiral de Ouro
 
 ### Física

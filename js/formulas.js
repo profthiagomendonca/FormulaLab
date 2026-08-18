@@ -784,50 +784,29 @@ PAGES.angleTypes = {
   }
 };
 
-PAGES.fourier = {
-  title: "Série de Fourier",
+PAGES.square = {
+  title: "Área do Quadrado",
   cat: "Matemática",
-  desc: "Decomposição matemática de ondas quadradas em harmônicos senoidais periódicos.",
-  fix: "f(t) = 4/π · Σ sen(nθ) / n",
-  color: "var(--color-pink)",
+  desc: "Cálculo da Área e do Perímetro de um polígono regular de quatro lados de comprimento L.",
+  fix: "A = L²  |  P = 4L",
+  color: "var(--color-blue)",
   always: true,
   fields: [
-    { key: "harm", label: "Harmônicos (n)", color: "var(--color-cyan)", min: 1, max: 12, step: 1, def: 4 },
-    { key: "speed", label: "Velocidade", color: "var(--color-pink)", min: 0.5, max: 3, step: 0.1, def: 1.5 }
+    { key: "l", label: "Lado (L)", color: "var(--color-blue)", min: 1, max: 15, step: 0.1, def: 8 }
   ],
-  init(s) { this.history = []; },
-  live(s) { return `Aproximação harmônica com <b>${s.harm}</b> termos de ordem ímpar.`; },
+  update(s) { s.A = s.l * s.l; s.P = 4 * s.l; },
+  live(s) { return `Área A = <span class="a">${fmt(s.l)}</span>² = <b>${fmt(s.A)}</b><br>Perímetro P = 4·<span class="a">${fmt(s.l)}</span> = <b>${fmt(s.P)}</b>`; },
   draw(svg, s) {
-    svg.setAttribute("viewBox", "0 0 500 500");
-    const t = (Date.now() / 1000) * s.speed;
-    let cx = 135, cy = 250;
-    let out = "";
-    for (let i = 1; i <= s.harm; i++) {
-      const n = 2 * i - 1;
-      const rad = 70 * (4 / (Math.PI * n));
-      const theta = n * t;
-      const nx = cx + rad * Math.cos(theta);
-      const ny = cy - rad * Math.sin(theta);
-      out += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${rad.toFixed(1)}" fill="none" stroke="rgba(236,72,153,0.12)" stroke-width="1.5"/>`;
-      out += `<line x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="var(--color-pink)" stroke-width="2"/>`;
-      cx = nx; cy = ny;
-    }
-    if (!this.history) this.history = [];
-    this.history.unshift(cy);
-    if (this.history.length > 200) this.history.pop();
-    out += `<line x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="250" y2="${cy.toFixed(1)}" stroke="var(--color-yellow)" stroke-width="1.5" stroke-dasharray="4 4"/>`;
-    let wavePoints = "";
-    for (let x = 0; x < this.history.length; x++) {
-      wavePoints += `${250 + x},${this.history[x].toFixed(1)} `;
-    }
-    if (wavePoints) {
-      out += `<polyline points="${wavePoints.trim()}" fill="none" stroke="var(--color-cyan)" stroke-width="3" style="filter:drop-shadow(0 0 4px rgba(6,182,212,0.3))"/>`;
-    }
+    const W = 500, H = 500, M = 50;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const sw = (W - 2 * M) / 15;
+    const size = s.l * sw;
+    const bx = (W - size) / 2, by = (H - size) / 2;
     svg.innerHTML = `
       <rect x="0" y="0" width="500" height="500" fill="rgba(0,0,0,0.15)" rx="24"/>
-      <line x1="250" y1="50" x2="250" y2="450" stroke="rgba(255,255,255,0.04)" stroke-width="2"/>
-      ${out}
-      <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="4.5" fill="var(--color-yellow)"/>
+      <rect x="${bx}" y="${by}" width="${size}" height="${size}" fill="rgba(59,130,246,0.06)" stroke="var(--color-blue)" stroke-width="4"/>
+      <text x="${bx + size/2}" y="${by + size + 22}" text-anchor="middle" font-size="14" font-weight="800" ${halo("var(--color-blue)")}>L = ${fmt(s.l)}</text>
+      <text x="${bx - 12}" y="${by + size/2 + 4}" text-anchor="end" font-size="14" font-weight="800" ${halo("var(--color-blue)")}>L = ${fmt(s.l)}</text>
     `;
   }
 };
@@ -1696,6 +1675,6 @@ PAGES.idealGas = {
 };
 
 const CATS = [
-  { name: "Matemática", ids: ["pythagoras", "linear", "quadratic", "circle", "triangleArea", "rectangle", "percent", "distance", "trig", "pa", "volume", "esfera", "juros", "fahrenheit", "mediaPonderada", "bezier", "angleTypes", "fourier", "goldenSpiral"] },
+  { name: "Matemática", ids: ["pythagoras", "linear", "quadratic", "circle", "triangleArea", "rectangle", "percent", "distance", "trig", "pa", "volume", "esfera", "juros", "fahrenheit", "mediaPonderada", "bezier", "angleTypes", "square", "goldenSpiral"] },
   { name: "Física", ids: ["quedaLivre", "mru", "newton", "ohm", "cinetica", "epot", "work", "pressao", "densidade", "gravitacao", "mruv", "pendulo", "calorimetria", "elastica", "eletrica", "projectile", "orbits", "timeDilation", "idealGas"] }
 ];
