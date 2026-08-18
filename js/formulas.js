@@ -1675,6 +1675,6 @@ PAGES.idealGas = {
 };
 
 const CATS = [
-  { name: "Matemática", ids: ["pythagoras", "linear", "quadratic", "circle", "triangleArea", "rectangle", "percent", "distance", "trig", "pa", "volume", "esfera", "juros", "fahrenheit", "mediaPonderada", "bezier", "angleTypes", "square", "goldenSpiral"] },
+  { name: "Matemática", ids: ["pythagoras", "linear", "quadratic", "circle", "triangleArea", "rectangle", "square", "percent", "distance", "trig", "pa", "volume", "esfera", "juros", "fahrenheit", "mediaPonderada", "bezier", "angleTypes", "goldenSpiral"] },
   { name: "Física", ids: ["quedaLivre", "mru", "newton", "ohm", "cinetica", "epot", "work", "pressao", "densidade", "gravitacao", "mruv", "pendulo", "calorimetria", "elastica", "eletrica", "projectile", "orbits", "timeDilation", "idealGas"] }
 ];
