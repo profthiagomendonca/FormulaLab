@@ -71,6 +71,7 @@ function updateThemeButtonText() {
 }
 
 window.activeChallenge = null;
+let activeChallengeSubject = "Matemática";
 
 const CHALLENGES = [
   {
@@ -79,6 +80,7 @@ const CHALLENGES = [
     desc: "Ajuste o Lado (L) de forma que a área do quadrado seja exatamente igual a 36.0 u.a.!",
     pageId: "square",
     goal: "Ajuste o Lado (L) para que a Área seja exatamente 36.00",
+    subject: "Matemática",
     validate(s) {
       return Math.abs(s.A - 36.00) < 0.01;
     }
@@ -89,8 +91,20 @@ const CHALLENGES = [
     desc: "Ajuste a abertura do ângulo principal para que as semirretas formem um triângulo retângulo.",
     pageId: "angleTypes",
     goal: "Ajuste o ângulo θ para que o triângulo formado seja Retângulo (um dos ângulos com 90°)",
+    subject: "Matemática",
     validate(s) {
       return s.triType === "Retângulo" && s.ang > 0 && s.ang < 180;
+    }
+  },
+  {
+    id: "desafio_media_aprovada",
+    title: "Média Aprovada",
+    desc: "Ajuste as notas e pesos de modo que a média final ponderada do aluno seja exatamente 7.0.",
+    pageId: "mediaPonderada",
+    goal: "Ajuste os valores para obter uma Média Ponderada de exatamente 7.00",
+    subject: "Matemática",
+    validate(s) {
+      return Math.abs(s.M - 7.00) < 0.01;
     }
   },
   {
@@ -99,8 +113,31 @@ const CHALLENGES = [
     desc: "Ajuste a gravidade para a da Terra (9.8 m/s²) e defina o tempo de queda para atingir uma altura final entre 44 e 45 metros.",
     pageId: "quedaLivre",
     goal: "Defina g = 9.8 m/s² e ajuste o tempo t para que a altura h fique entre 44.0m e 45.0m",
+    subject: "Física",
     validate(s) {
       return Math.abs(s.g - 9.8) < 0.1 && s.h >= 44 && s.h <= 45;
+    }
+  },
+  {
+    id: "desafio_corrente_segura",
+    title: "Corrente Segura",
+    desc: "Ajuste a Tensão (V) e a Resistência (R) de forma que a Corrente Elétrica (I) resultante na Lei de Ohm seja exatamente igual a 2.0 A.",
+    pageId: "ohm",
+    goal: "Ajuste a Tensão e a Resistência para obter uma corrente I de exatamente 2.0 A",
+    subject: "Física",
+    validate(s) {
+      return Math.abs(s.I - 2.00) < 0.02;
+    }
+  },
+  {
+    id: "desafio_encontro_alvo",
+    title: "Encontro no Alvo",
+    desc: "No Movimento Uniforme, defina o tempo t = 4.0s e ajuste a velocidade e posição inicial para que o objeto termine na marca de 10 metros.",
+    pageId: "mru",
+    goal: "Ajuste s0 e v para obter s = 10.0 m no tempo fixado em t = 4.0 s",
+    subject: "Física",
+    validate(s) {
+      return Math.abs(s.s - 10.00) < 0.02 && Math.abs(s.t - 4.0) < 0.01;
     }
   }
 ];
@@ -111,6 +148,11 @@ window.startChallenge = function(id) {
     window.activeChallenge = challenge;
     location.hash = challenge.pageId;
   }
+};
+
+window.selectChallengeSubject = function(subject) {
+  activeChallengeSubject = subject;
+  showMenu();
 };
 
 // Renders the main category menu
@@ -145,9 +187,16 @@ function showMenu() {
     html += `
       <div id="section-Desafios" class="section">
         <h2>Desafios Disponíveis</h2>
+        
+        <div class="challenge-sub-selector">
+          <button id="btn-sub-mat" class="sub-btn ${activeChallengeSubject === "Matemática" ? "active" : ""}" onclick="selectChallengeSubject('Matemática')">Matemática</button>
+          <button id="btn-sub-fis" class="sub-btn ${activeChallengeSubject === "Física" ? "active" : ""}" onclick="selectChallengeSubject('Física')">Física</button>
+        </div>
+        
         <div class="menu-grid">
     `;
-    for (const ch of CHALLENGES) {
+    const filtered = CHALLENGES.filter(c => c.subject === activeChallengeSubject);
+    for (const ch of filtered) {
       html += `
         <div class="card challenge-card" style="--accent: var(--color-purple)" onclick="startChallenge('${ch.id}')">
           <span class="badge">DESAFIO</span>
@@ -233,12 +282,12 @@ function showPage(id) {
 
   // Template HTML da página
   app.innerHTML = `
-    <button id="theme-toggle-btn" class="theme-btn" onclick="toggleTheme()">
-      ${document.body.classList.contains("light-mode") ? "☀️ Claro" : "🌙 Escuro"}
-    </button>
     <div class="page-head">
       <div class="topline">
         <button class="back" onclick="location.hash=''">← Voltar ao Menu</button>
+        <button id="theme-toggle-btn" class="theme-btn-inline" onclick="toggleTheme()">
+          ${document.body.classList.contains("light-mode") ? "☀️ Claro" : "🌙 Escuro"}
+        </button>
         <span id="fix">${p.fix}</span>
       </div>
       <h1>${p.title}</h1>
@@ -261,16 +310,23 @@ function showPage(id) {
         <div id="mascot-container" class="mascot-box">
           <div class="mascot-avatar">
             <svg viewBox="0 0 50 50" width="55" height="55" style="overflow: visible;">
-              <!-- Cabelo do Einstein -->
-              <!-- Lateral Esquerdo -->
-              <path d="M 9 15 C 3 13, 0 18, 3 24 C 0 28, 4 32, 9 29" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1.5"/>
-              <!-- Lateral Direito -->
-              <path d="M 41 15 C 47 13, 50 18, 47 24 C 50 28, 46 32, 41 29" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1.5"/>
-              <!-- Superior -->
-              <path d="M 15 13 C 12 7, 20 4, 23 9 C 26 4, 35 6, 35 13" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1.5"/>
-              <!-- Antena de Cientista -->
-              <line x1="25" y1="9" x2="25" y2="3" stroke="var(--color-blue)" stroke-width="1.5"/>
-              <circle cx="25" cy="3" r="2.5" fill="var(--color-cyan)"/>
+              <!-- Cabelo Fofo do Einstein (Nuvens de Círculos) -->
+              <!-- Lado Esquerdo -->
+              <circle cx="7" cy="17" r="4.5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
+              <circle cx="5" cy="23" r="5.5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
+              <circle cx="8" cy="29" r="4" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
+              <!-- Lado Direito -->
+              <circle cx="43" cy="17" r="4.5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
+              <circle cx="45" cy="23" r="5.5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
+              <circle cx="42" cy="29" r="4" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
+              <!-- Topo -->
+              <circle cx="19" cy="9" r="4.5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
+              <circle cx="25" cy="8" r="5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
+              <circle cx="31" cy="9" r="4.5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
+
+              <!-- Antena -->
+              <line x1="25" y1="8" x2="25" y2="2" stroke="var(--color-blue)" stroke-width="1.5"/>
+              <circle cx="25" cy="2" r="2" fill="var(--color-cyan)"/>
               <!-- Orelhas -->
               <rect x="5" y="20" width="4" height="8" rx="2" fill="var(--text-muted)"/>
               <rect x="41" y="20" width="4" height="8" rx="2" fill="var(--text-muted)"/>
@@ -284,7 +340,7 @@ function showPage(id) {
                 <rect x="28" y="19" width="7" height="3.5" rx="1.75" fill="var(--color-cyan)"/>
               </g>
               <!-- Bigode do Einstein -->
-              <path d="M 16 28 C 19 25, 23 25, 25 28 C 27 25, 31 25, 34 28 C 36 30, 31 31, 25 29 C 19 31, 14 30, 16 28 Z" fill="#f8fafc" stroke="var(--text-muted)" stroke-width="1"/>
+              <path d="M 17 28 Q 25 24 33 28 Q 25 32 17 28 Z" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
               <!-- Corpo -->
               <path d="M 18 36 L 15 44 A 3 3 0 0 0 18 47 L 32 47 A 3 3 0 0 0 35 44 L 32 36 Z" fill="var(--bg-control)" stroke="var(--border-color)" stroke-width="2"/>
             </svg>

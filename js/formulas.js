@@ -555,6 +555,11 @@ PAGES.mediaPonderada = {
     { key: "p2", label: "Peso 2", color: "var(--color-pink)", min: 1, max: 5, step: 1, def: 3 }
   ],
   update(s) { s.M = (s.n1 * s.p1 + s.n2 * s.p2) / (s.p1 + s.p2); },
+  mascot(s) {
+    if (s.M < 5) return { text: "Essa média está baixa. Vamos tentar aumentar as notas ou os pesos das maiores notas?", expression: "thinking" };
+    if (s.M >= 7) return { text: "Média excelente! Aprovado com sucesso!", expression: "happy" };
+    return { text: "A média ponderada leva em consideração pesos diferentes para cada nota.", expression: "normal" };
+  },
   live(s) { return `Média Mp = (<span class="a">${fmt(s.n1)}</span>·${s.p1} + <span class="e">${fmt(s.n2)}</span>·${s.p2}) / (${s.p1} + ${s.p2}) = <b>${fmt(s.M)}</b>`; },
   draw(svg, s) {
     svg.setAttribute("viewBox", "0 0 500 380");
@@ -959,6 +964,9 @@ PAGES.mru = {
   ],
   update(s) { s.s = s.s0 + s.v * s.t; },
   live(s) { return `s(${fmt(s.t)}) = <span class="a">${fmt(s.s0)}</span> + <span class="c">${fmt(s.v)}</span>·<span class="d">${fmt(s.t)}</span> = <b>${fmt(s.s)} m</b>`; },
+  mascot(s) {
+    return { text: "No Movimento Uniforme (MRU), a velocidade é constante e a posição aumenta ou diminui de forma linear.", expression: "normal" };
+  },
   draw(svg, s) {
     svg.setAttribute("viewBox", "0 0 500 500");
     const p = planeSVG(0, 10, -12, 12);
@@ -1021,6 +1029,10 @@ PAGES.ohm = {
   ],
   update(s) { s.I = s.U / s.R; },
   live(s) { return `Corrente I = <span class="n">${fmt(s.U)} V</span> / <span class="R">${fmt(s.R)} Ω</span> = <b>${fmt(s.I)} A</b>`; },
+  mascot(s) {
+    if (s.I > 4) return { text: "Cuidado, a corrente elétrica está muito alta! Isso pode queimar o resistor!", expression: "surprised" };
+    return { text: "Pela Lei de Ohm, a corrente (I) é a Tensão (U) dividida pela Resistência (R).", expression: "normal" };
+  },
   draw(svg, s) {
     svg.setAttribute("viewBox", "0 0 500 380");
     const t = Date.now() / 1000;
