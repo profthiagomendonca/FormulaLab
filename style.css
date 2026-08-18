@@ -385,7 +385,7 @@ svg {
   gap: 12px;
   max-height: 380px;
   overflow-y: auto;
-  padding-right: 4px;
+  padding: 4px 8px 4px 4px;
 }
 
 /* Custom Scrollbar */

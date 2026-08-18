@@ -729,7 +729,7 @@ PAGES.goldenSpiral = {
   color: "var(--color-yellow)",
   always: true,
   fields: [
-    { key: "n", label: "Nível / Iterações", color: "var(--color-yellow)", min: 1, max: 8, step: 1, def: 6 }
+    { key: "n", label: "Nível/Iterações", color: "var(--color-yellow)", min: 1, max: 8, step: 1, def: 6 }
   ],
   live(s) {
     const fib = [1, 1, 2, 3, 5, 8, 13, 21, 34];
