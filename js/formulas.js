@@ -638,37 +638,114 @@ PAGES.bezier = {
   }
 };
 
-PAGES.fractalTree = {
-  title: "Árvore Fractal",
+PAGES.angleTypes = {
+  title: "Tipos de Ângulos",
   cat: "Matemática",
-  desc: "Criação de formas naturais recursivas baseadas em padrões repetitivos de ramificação autosemelhante.",
-  fix: "f(n) = f(n-1) + f(n-1)",
-  color: "var(--color-green)",
+  desc: "Classificação geométrica dos ângulos (agudo, reto, obtuso, raso, côncavo) e dos triângulos correspondentes.",
+  fix: "0° ≤ θ ≤ 360°",
+  color: "var(--color-yellow)",
   always: true,
   fields: [
-    { key: "depth", label: "Profundidade (n)", color: "var(--color-green)", min: 1, max: 7, step: 1, def: 5 },
-    { key: "ang", label: "Ângulo dos galhos", color: "var(--color-purple)", min: 10, max: 60, step: 1, def: 30 },
-    { key: "ratio", label: "Taxa de encolhimento", color: "var(--color-pink)", min: 0.5, max: 0.8, step: 0.05, def: 0.7 }
+    { key: "ang", label: "Ângulo (θ)", color: "var(--color-yellow)", min: 0, max: 360, step: 1, def: 60 }
   ],
-  live(s) { return `Nível de Recursão: <b>${s.depth}</b><br>Número de galhos criados: <b>${Math.pow(2, s.depth + 1) - 2}</b>`; },
+  update(s) {
+    const ang = s.ang;
+    
+    let angleType = "Agudo";
+    if (ang === 0) angleType = "Nulo";
+    else if (ang > 0 && ang < 90) angleType = "Agudo";
+    else if (ang === 90) angleType = "Reto";
+    else if (ang > 90 && ang < 180) angleType = "Obtuso";
+    else if (ang === 180) angleType = "Raso";
+    else if (ang > 180 && ang < 360) angleType = "Côncavo";
+    else if (ang === 360) angleType = "Completo";
+    s.angleType = angleType;
+
+    if (ang > 0 && ang < 180) {
+      const c = 130; // AB
+      const b = 150; // AC
+      const r = (ang * Math.PI) / 180;
+      
+      const cx = 250 + b * Math.cos(r);
+      const cy = 280 - b * Math.sin(r);
+      s.cx = cx;
+      s.cy = cy;
+      
+      const a = Math.hypot(380 - cx, 280 - cy); // BC
+      
+      const cosB = (a*a + c*c - b*b) / (2*a*c);
+      const cosC = (a*a + b*b - c*c) / (2*a*b);
+      
+      const angB = Math.round(Math.acos(clamp(cosB, -1, 1)) * 180 / Math.PI);
+      const angC = Math.round(Math.acos(clamp(cosC, -1, 1)) * 180 / Math.PI);
+      
+      s.angB = angB;
+      s.angC = angC;
+      
+      let triType = "Acutângulo";
+      if (ang > 90 || angB > 90 || angC > 90) {
+        triType = "Obtusângulo";
+      } else if (ang === 90 || angB === 90 || angC === 90) {
+        triType = "Retângulo";
+      }
+      s.triType = triType;
+    } else {
+      s.cx = 250;
+      s.cy = 280;
+      s.angB = 0;
+      s.angC = 0;
+      s.triType = "";
+    }
+  },
+  live(s) {
+    let txt = `Ângulo θ = <b>${fmt(s.ang)}°</b> (Ângulo ${s.angleType})`;
+    if (s.ang > 0 && s.ang < 180) {
+      txt += `<br>Triângulo formado: <b>Triângulo ${s.triType}</b>`;
+      txt += `<br>Ângulos internos: A = <b>${fmt(s.ang)}°</b>, B = <b>${fmt(s.angB)}°</b>, C = <b>${fmt(s.angC)}°</b>`;
+    } else if (s.ang === 0 || s.ang >= 180) {
+      txt += `<br>Não forma triângulo (ângulo nulo, raso ou côncavo).`;
+    }
+    return txt;
+  },
   draw(svg, s) {
     svg.setAttribute("viewBox", "0 0 500 500");
-    let lines = "";
-    function branch(x, y, len, angle, d) {
-      if (d > s.depth) return;
-      const x2 = x + len * Math.cos(angle * Math.PI / 180);
-      const y2 = y - len * Math.sin(angle * Math.PI / 180);
-      const w = Math.max(1, s.depth - d + 1) * 0.95;
-      const opacity = 0.45 + (0.55 * (s.depth - d) / s.depth);
-      lines += `<line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="var(--color-green)" stroke-width="${w.toFixed(1)}" opacity="${opacity.toFixed(2)}" stroke-linecap="round"/>`;
-      branch(x2, y2, len * s.ratio, angle + s.ang, d + 1);
-      branch(x2, y2, len * s.ratio, angle - s.ang, d + 1);
+    const r = (s.ang * Math.PI) / 180;
+    const cx = s.cx;
+    const cy = s.cy;
+    
+    let arcHTML = "";
+    if (s.ang === 90) {
+      arcHTML = `
+        <polyline points="250,255 275,255 275,280" fill="none" stroke="var(--color-yellow)" stroke-width="2"/>
+        <circle cx="262.5" cy="267.5" r="2" fill="var(--color-yellow)"/>
+      `;
+    } else if (s.ang === 360) {
+      arcHTML = `<circle cx="250" cy="280" r="30" fill="rgba(245,158,11,0.18)" stroke="var(--color-yellow)" stroke-width="2"/>`;
+    } else if (s.ang > 0) {
+      arcHTML = `<path d="M 250 280 L 285 280 A 35 35 0 ${s.ang > 180 ? 1 : 0} 0 ${(250 + 35*Math.cos(r)).toFixed(1)} ${(280 - 35*Math.sin(r)).toFixed(1)} Z" fill="rgba(245,158,11,0.22)" stroke="var(--color-yellow)" stroke-width="2"/>`;
     }
-    branch(250, 440, 105, 90, 1);
+    
+    let triHTML = "";
+    if (s.ang > 0 && s.ang < 180) {
+      triHTML = `
+        <line x1="380" y1="280" x2="${cx.toFixed(1)}" y2="${cy.toFixed(1)}" stroke="var(--color-green)" stroke-width="2" stroke-dasharray="5 4" opacity="0.6"/>
+        <circle cx="380" cy="280" r="5" fill="var(--color-green)"/>
+        <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="5" fill="var(--color-green)"/>
+        <text x="395" y="295" text-anchor="middle" font-size="12" font-weight="700" ${halo("var(--color-green)")}>B</text>
+        <text x="${(cx + 10).toFixed(1)}" y="${(cy - 10).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" ${halo("var(--color-green)")}>C</text>
+      `;
+    }
+    
     svg.innerHTML = `
       <rect x="0" y="0" width="500" height="500" fill="rgba(0,0,0,0.15)" rx="24"/>
-      <line x1="130" y1="440" x2="370" y2="440" stroke="var(--text-muted)" stroke-width="3" stroke-linecap="round"/>
-      ${lines}
+      <text x="40" y="55" font-size="16" font-weight="800" fill="var(--color-yellow)" font-family="var(--font-title)">Ângulo: ${s.angleType}</text>
+      ${s.ang > 0 && s.ang < 180 ? `<text x="460" y="55" text-anchor="end" font-size="16" font-weight="800" fill="var(--color-green)" font-family="var(--font-title)">Triângulo: ${s.triType}</text>` : ""}
+      <line x1="250" y1="280" x2="420" y2="280" stroke="var(--text-primary)" stroke-width="3" stroke-linecap="round"/>
+      <line x1="250" y1="280" x2="${(250 + 170*Math.cos(r)).toFixed(1)}" y2="${(280 - 170*Math.sin(r)).toFixed(1)}" stroke="var(--color-yellow)" stroke-width="3" stroke-linecap="round"/>
+      ${arcHTML}
+      ${triHTML}
+      <circle cx="250" cy="280" r="6" fill="var(--color-yellow)" stroke="#fff" stroke-width="1.5"/>
+      <text x="232" y="295" font-size="13" font-weight="800" ${halo("var(--color-yellow)")}>A</text>
     `;
   }
 };
@@ -1585,6 +1662,6 @@ PAGES.idealGas = {
 };
 
 const CATS = [
-  { name: "Matemática", ids: ["pythagoras", "linear", "quadratic", "circle", "triangleArea", "rectangle", "percent", "distance", "trig", "pa", "volume", "esfera", "juros", "fahrenheit", "mediaPonderada", "bezier", "fractalTree", "fourier", "goldenSpiral"] },
+  { name: "Matemática", ids: ["pythagoras", "linear", "quadratic", "circle", "triangleArea", "rectangle", "percent", "distance", "trig", "pa", "volume", "esfera", "juros", "fahrenheit", "mediaPonderada", "bezier", "angleTypes", "fourier", "goldenSpiral"] },
   { name: "Física", ids: ["quedaLivre", "mru", "newton", "ohm", "cinetica", "epot", "work", "pressao", "densidade", "gravitacao", "mruv", "pendulo", "calorimetria", "elastica", "eletrica", "projectile", "orbits", "timeDilation", "idealGas"] }
 ];

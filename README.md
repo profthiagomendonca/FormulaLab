@@ -28,7 +28,7 @@ Atualmente, o projeto conta com 38 tópicos divididos em duas categorias princip
 * Celsius para Fahrenheit
 * Média Ponderada
 * Curvas de Bézier
-* Árvore Fractal
+* Tipos de Ângulos
 * Série de Fourier
 * Espiral de Ouro
 
