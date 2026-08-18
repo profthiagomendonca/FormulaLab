@@ -709,24 +709,58 @@ PAGES.angleTypes = {
   },
   draw(svg, s) {
     svg.setAttribute("viewBox", "0 0 500 500");
-    const r = (s.ang * Math.PI) / 180;
-    const cx = s.cx;
-    const cy = s.cy;
+    const ang = Math.round(s.ang);
+    const r = (ang * Math.PI) / 180;
+    
+    // Classificação dinâmica baseada no ângulo interpolado s.ang
+    let angleType = "Agudo";
+    if (ang === 0) angleType = "Nulo";
+    else if (ang > 0 && ang < 90) angleType = "Agudo";
+    else if (ang === 90) angleType = "Reto";
+    else if (ang > 90 && ang < 180) angleType = "Obtuso";
+    else if (ang === 180) angleType = "Raso";
+    else if (ang > 180 && ang < 360) angleType = "Côncavo";
+    else if (ang === 360) angleType = "Completo";
+
+    let triType = "";
+    let cx = 250, cy = 280;
+    
+    if (ang > 0 && ang < 180) {
+      const c = 130; // AB
+      const b = 150; // AC
+      cx = 250 + b * Math.cos(r);
+      cy = 280 - b * Math.sin(r);
+      
+      const a = Math.hypot(380 - cx, 280 - cy); // BC
+      
+      const cosB = (a*a + c*c - b*b) / (2*a*c);
+      const cosC = (a*a + b*b - c*c) / (2*a*b);
+      
+      const angB = Math.round(Math.acos(clamp(cosB, -1, 1)) * 180 / Math.PI);
+      const angC = Math.round(Math.acos(clamp(cosC, -1, 1)) * 180 / Math.PI);
+      
+      triType = "Acutângulo";
+      if (ang > 90 || angB > 90 || angC > 90) {
+        triType = "Obtusângulo";
+      } else if (ang === 90 || angB === 90 || angC === 90) {
+        triType = "Retângulo";
+      }
+    }
     
     let arcHTML = "";
-    if (s.ang === 90) {
+    if (ang === 90) {
       arcHTML = `
-        <polyline points="250,255 275,255 275,280" fill="none" stroke="var(--color-yellow)" stroke-width="2"/>
-        <circle cx="262.5" cy="267.5" r="2" fill="var(--color-yellow)"/>
+        <polyline points="250,255 275,255 275,280" fill="none" stroke="var(--color-yellow)" stroke-width="2.5"/>
+        <circle cx="262.5" cy="267.5" r="2.5" fill="var(--color-yellow)"/>
       `;
-    } else if (s.ang === 360) {
-      arcHTML = `<circle cx="250" cy="280" r="30" fill="rgba(245,158,11,0.18)" stroke="var(--color-yellow)" stroke-width="2"/>`;
-    } else if (s.ang > 0) {
-      arcHTML = `<path d="M 250 280 L 285 280 A 35 35 0 ${s.ang > 180 ? 1 : 0} 0 ${(250 + 35*Math.cos(r)).toFixed(1)} ${(280 - 35*Math.sin(r)).toFixed(1)} Z" fill="rgba(245,158,11,0.22)" stroke="var(--color-yellow)" stroke-width="2"/>`;
+    } else if (ang === 360) {
+      arcHTML = `<circle cx="250" cy="280" r="30" fill="rgba(245,158,11,0.18)" stroke="var(--color-yellow)" stroke-width="2.5"/>`;
+    } else if (ang > 0) {
+      arcHTML = `<path d="M 250 280 L 285 280 A 35 35 0 ${ang > 180 ? 1 : 0} 0 ${(250 + 35*Math.cos(r)).toFixed(1)} ${(280 - 35*Math.sin(r)).toFixed(1)} Z" fill="rgba(245,158,11,0.22)" stroke="var(--color-yellow)" stroke-width="2.5"/>`;
     }
     
     let triHTML = "";
-    if (s.ang > 0 && s.ang < 180) {
+    if (ang > 0 && ang < 180) {
       triHTML = `
         <line x1="380" y1="280" x2="${cx.toFixed(1)}" y2="${cy.toFixed(1)}" stroke="var(--color-green)" stroke-width="2" stroke-dasharray="5 4" opacity="0.6"/>
         <circle cx="380" cy="280" r="5" fill="var(--color-green)"/>
@@ -738,8 +772,8 @@ PAGES.angleTypes = {
     
     svg.innerHTML = `
       <rect x="0" y="0" width="500" height="500" fill="rgba(0,0,0,0.15)" rx="24"/>
-      <text x="40" y="55" font-size="16" font-weight="800" fill="var(--color-yellow)" font-family="var(--font-title)">Ângulo: ${s.angleType}</text>
-      ${s.ang > 0 && s.ang < 180 ? `<text x="460" y="55" text-anchor="end" font-size="16" font-weight="800" fill="var(--color-green)" font-family="var(--font-title)">Triângulo: ${s.triType}</text>` : ""}
+      <text x="40" y="60" font-size="20" font-weight="800" fill="var(--color-yellow)" font-family="var(--font-title)">Ângulo: ${angleType}</text>
+      ${ang > 0 && ang < 180 ? `<text x="460" y="60" text-anchor="end" font-size="20" font-weight="800" fill="var(--color-green)" font-family="var(--font-title)">Triângulo: ${triType}</text>` : ""}
       <line x1="250" y1="280" x2="420" y2="280" stroke="var(--text-primary)" stroke-width="3" stroke-linecap="round"/>
       <line x1="250" y1="280" x2="${(250 + 170*Math.cos(r)).toFixed(1)}" y2="${(280 - 170*Math.sin(r)).toFixed(1)}" stroke="var(--color-yellow)" stroke-width="3" stroke-linecap="round"/>
       ${arcHTML}
