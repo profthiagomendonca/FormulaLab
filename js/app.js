@@ -14,18 +14,7 @@ let activeCategory = "Matemática";
 
 window.selectCategory = function(name) {
   activeCategory = name;
-  const matBtn = $("btn-cat-mat");
-  const fisBtn = $("btn-cat-fis");
-  if (matBtn && fisBtn) {
-    matBtn.classList.toggle("active", name === "Matemática");
-    fisBtn.classList.toggle("active", name === "Física");
-  }
-  const matSec = $("section-Matemática");
-  const fisSec = $("section-Física");
-  if (matSec && fisSec) {
-    matSec.style.display = name === "Matemática" ? "block" : "none";
-    fisSec.style.display = name === "Física" ? "block" : "none";
-  }
+  showMenu();
 };
 
 window.updateMascot = function(text, expression) {
@@ -59,9 +48,75 @@ window.updateMascot = function(text, expression) {
   }
 };
 
+// Controle do Tema Claro/Escuro com persistência
+(function() {
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "light") {
+    document.body.classList.add("light-mode");
+  }
+})();
+
+window.toggleTheme = function() {
+  const isLight = document.body.classList.toggle("light-mode");
+  localStorage.setItem("theme", isLight ? "light" : "dark");
+  updateThemeButtonText();
+};
+
+function updateThemeButtonText() {
+  const btn = $("theme-toggle-btn");
+  if (btn) {
+    const isLight = document.body.classList.contains("light-mode");
+    btn.innerHTML = isLight ? "☀️ Claro" : "🌙 Escuro";
+  }
+}
+
+window.activeChallenge = null;
+
+const CHALLENGES = [
+  {
+    id: "desafio_quadrado",
+    title: "Desafio do Quadrado Perfeito",
+    desc: "Ajuste o Lado (L) de forma que a área do quadrado seja exatamente igual a 36.0 u.a.!",
+    pageId: "square",
+    goal: "Ajuste o Lado (L) para que a Área seja exatamente 36.00",
+    validate(s) {
+      return Math.abs(s.A - 36.00) < 0.01;
+    }
+  },
+  {
+    id: "desafio_angulo_reto",
+    title: "O Canto Perfeito",
+    desc: "Ajuste a abertura do ângulo principal para que as semirretas formem um triângulo retângulo.",
+    pageId: "angleTypes",
+    goal: "Ajuste o ângulo θ para que o triângulo formado seja Retângulo (um dos ângulos com 90°)",
+    validate(s) {
+      return s.triType === "Retângulo" && s.ang > 0 && s.ang < 180;
+    }
+  },
+  {
+    id: "desafio_queda_terra",
+    title: "Gravidade Terrestre",
+    desc: "Ajuste a gravidade para a da Terra (9.8 m/s²) e defina o tempo de queda para atingir uma altura final entre 44 e 45 metros.",
+    pageId: "quedaLivre",
+    goal: "Defina g = 9.8 m/s² e ajuste o tempo t para que a altura h fique entre 44.0m e 45.0m",
+    validate(s) {
+      return Math.abs(s.g - 9.8) < 0.1 && s.h >= 44 && s.h <= 45;
+    }
+  }
+];
+
+window.startChallenge = function(id) {
+  const challenge = CHALLENGES.find(c => c.id === id);
+  if (challenge) {
+    window.activeChallenge = challenge;
+    location.hash = challenge.pageId;
+  }
+};
+
 // Renders the main category menu
 function showMenu() {
   current = null;
+  window.activeChallenge = null; // Reseta desafio ativo ao voltar ao menu
   document.body.classList.remove("page-mode");
   
   if (rafId) {
@@ -70,6 +125,9 @@ function showMenu() {
   }
 
   let html = `
+    <button id="theme-toggle-btn" class="theme-btn" onclick="toggleTheme()">
+      ${document.body.classList.contains("light-mode") ? "☀️ Claro" : "🌙 Escuro"}
+    </button>
     <div class="hero">
       <p class="eyebrow">Simulações Científicas</p>
       <h1>Fórmulas Interativas</h1>
@@ -78,17 +136,39 @@ function showMenu() {
       <div class="category-selector">
         <button id="btn-cat-mat" class="cat-btn ${activeCategory === "Matemática" ? "active" : ""}" onclick="selectCategory('Matemática')">Matemática</button>
         <button id="btn-cat-fis" class="cat-btn ${activeCategory === "Física" ? "active" : ""}" onclick="selectCategory('Física')">Física</button>
+        <button id="btn-cat-des" class="cat-btn ${activeCategory === "Desafios" ? "active" : ""}" onclick="selectCategory('Desafios')">Desafios</button>
       </div>
     </div>
   `;
 
-  for (const cat of CATS) {
-    const isVisible = cat.name === activeCategory;
+  if (activeCategory === "Desafios") {
     html += `
-      <div id="section-${cat.name}" class="section" style="display: ${isVisible ? 'block' : 'none'}">
-        <h2>${cat.name}</h2>
+      <div id="section-Desafios" class="section">
+        <h2>Desafios Disponíveis</h2>
         <div class="menu-grid">
     `;
+    for (const ch of CHALLENGES) {
+      html += `
+        <div class="card challenge-card" style="--accent: var(--color-purple)" onclick="startChallenge('${ch.id}')">
+          <span class="badge">DESAFIO</span>
+          <h3>${ch.title}</h3>
+          <p>${ch.desc}</p>
+          <div class="challenge-footer">Acesse o laboratório →</div>
+        </div>
+      `;
+    }
+    html += `
+        </div>
+      </div>
+    `;
+  } else {
+    for (const cat of CATS) {
+      const isVisible = cat.name === activeCategory;
+      html += `
+        <div id="section-${cat.name}" class="section" style="display: ${isVisible ? 'block' : 'none'}">
+          <h2>${cat.name}</h2>
+          <div class="menu-grid">
+      `;
     
     for (const id of cat.ids) {
       const p = PAGES[id];
@@ -152,6 +232,9 @@ function showPage(id) {
 
   // Template HTML da página
   app.innerHTML = `
+    <button id="theme-toggle-btn" class="theme-btn" onclick="toggleTheme()">
+      ${document.body.classList.contains("light-mode") ? "☀️ Claro" : "🌙 Escuro"}
+    </button>
     <div class="page-head">
       <div class="topline">
         <button class="back" onclick="location.hash=''">← Voltar ao Menu</button>
@@ -166,18 +249,30 @@ function showPage(id) {
         <svg id="viz"></svg>
       </div>
       <div class="panel">
+        ${window.activeChallenge ? `
+          <div class="challenge-banner">
+            <strong>🏆 DESAFIO:</strong> ${window.activeChallenge.goal}
+          </div>
+        ` : ""}
         <div id="live" class="live"></div>
         <div id="controls"></div>
         
         <div id="mascot-container" class="mascot-box">
           <div class="mascot-avatar">
-            <svg viewBox="0 0 50 50" width="50" height="50">
-              <!-- Antena -->
-              <line x1="25" y1="12" x2="25" y2="4" stroke="var(--color-blue)" stroke-width="2"/>
-              <circle cx="25" cy="4" r="3" fill="var(--color-cyan)"/>
+            <svg viewBox="0 0 50 50" width="55" height="55" style="overflow: visible;">
+              <!-- Cabelo do Einstein -->
+              <!-- Lateral Esquerdo -->
+              <path d="M 9 15 C 3 13, 0 18, 3 24 C 0 28, 4 32, 9 29" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1.5"/>
+              <!-- Lateral Direito -->
+              <path d="M 41 15 C 47 13, 50 18, 47 24 C 50 28, 46 32, 41 29" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1.5"/>
+              <!-- Superior -->
+              <path d="M 15 13 C 12 7, 20 4, 23 9 C 26 4, 35 6, 35 13" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1.5"/>
+              <!-- Antena de Cientista -->
+              <line x1="25" y1="9" x2="25" y2="3" stroke="var(--color-blue)" stroke-width="1.5"/>
+              <circle cx="25" cy="3" r="2.5" fill="var(--color-cyan)"/>
               <!-- Orelhas -->
-              <rect x="6" y="20" width="4" height="8" rx="2" fill="var(--text-muted)"/>
-              <rect x="40" y="20" width="4" height="8" rx="2" fill="var(--text-muted)"/>
+              <rect x="5" y="20" width="4" height="8" rx="2" fill="var(--text-muted)"/>
+              <rect x="41" y="20" width="4" height="8" rx="2" fill="var(--text-muted)"/>
               <!-- Cabeça -->
               <rect x="9" y="12" width="32" height="24" rx="8" fill="var(--bg-control)" stroke="var(--border-color)" stroke-width="2"/>
               <!-- Face Plate -->
@@ -187,6 +282,8 @@ function showPage(id) {
                 <rect x="15" y="19" width="7" height="3.5" rx="1.75" fill="var(--color-cyan)"/>
                 <rect x="28" y="19" width="7" height="3.5" rx="1.75" fill="var(--color-cyan)"/>
               </g>
+              <!-- Bigode do Einstein -->
+              <path d="M 16 28 C 19 25, 23 25, 25 28 C 27 25, 31 25, 34 28 C 36 30, 31 31, 25 29 C 19 31, 14 30, 16 28 Z" fill="#f8fafc" stroke="var(--text-muted)" stroke-width="1"/>
               <!-- Corpo -->
               <path d="M 18 36 L 15 44 A 3 3 0 0 0 18 47 L 32 47 A 3 3 0 0 0 35 44 L 32 36 Z" fill="var(--bg-control)" stroke="var(--border-color)" stroke-width="2"/>
             </svg>
@@ -271,9 +368,23 @@ function syncPage() {
     }
   }
   $("live").innerHTML = current.live(state);
-  
-  // Atualiza as dicas do mascote dinamicamente com base nas interações
-  if (current.mascot) {
+  // Validação e dicas do Desafio Ativo ou comportamento normal do Mascote
+  if (window.activeChallenge) {
+    const solved = window.activeChallenge.validate(state);
+    if (solved) {
+      window.updateMascot(
+        `<b>Incrível! Desafio concluído! 🎉</b><br>Você resolveu a fórmula com precisão. Clique abaixo para escolher outro desafio:<br>` +
+        `<button class="back" onclick="location.hash=''" style="margin-top: 10px; font-size: 11px; padding: 6px 12px; display: inline-flex;">← Voltar aos Desafios</button>`,
+        "happy"
+      );
+    } else {
+      window.updateMascot(
+        `<b>Objetivo:</b> ${window.activeChallenge.goal}<br>` +
+        `<span style="font-size: 12px; opacity: 0.75; display: block; margin-top: 4px;">Ajuste os parâmetros para resolver o mistério!</span>`,
+        "thinking"
+      );
+    }
+  } else if (current.mascot) {
     const info = current.mascot(state);
     window.updateMascot(info.text, info.expression);
   } else {

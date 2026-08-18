@@ -59,3 +59,20 @@ Atualmente, o projeto conta com 38 tópicos divididos em duas categorias princip
 O simulador está hospedado no Netlify e pode ser acessado diretamente pelo link:
 
 [Acesse o FormulaLab](https://formula-lab.netlify.app)
+
+## Como executar localmente
+
+Como o deploy automático do Netlify está pausado para desenvolvimento, você pode executar o FormulaLab localmente no seu computador de duas formas simples:
+
+### Opção 1: Abertura Direta
+1. Navegue até a pasta do projeto no seu computador.
+2. Dê um duplo clique no arquivo `index.html` para abri-lo diretamente em qualquer navegador.
+
+### Opção 2: Servidor Local (Recomendado para transições suaves)
+Se você estiver utilizando o VS Code:
+1. Instale a extensão **Live Server**.
+2. Clique com o botão direito no arquivo `index.html` e selecione **Open with Live Server**.
+
+Se preferir usar o terminal na pasta do projeto:
+* **Python**: Execute `python -m http.server 8000` e acesse `http://localhost:8000`.
+* **Node.js (npm)**: Execute `npx serve` e acesse o endereço fornecido no terminal.
