@@ -737,31 +737,78 @@ PAGES.goldenSpiral = {
   },
   draw(svg, s) {
     svg.setAttribute("viewBox", "0 0 500 500");
-    const fib = [1, 1, 2, 3, 5, 8, 13, 21, 34];
+    const fib = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
     const n = Math.round(s.n);
-    let x = 270, y = 220, scale = 9;
-    let dir = 0, out = "", path = "";
+    
+    // Calcula posições brutas para obter o bounding box
+    let x = 0, y = 0;
+    let dir = 0;
+    const steps = [];
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+
     for (let i = 0; i < n; i++) {
-      const f = fib[i] * scale;
+      const f = fib[i];
       let qx = x, qy = y;
       if (dir === 0) { qy = y - f; x = x + f; }
       else if (dir === 1) { x = x - f; }
       else if (dir === 2) { qx = qx - f; x = x - f; qy = y - f; y = y - f; }
       else if (dir === 3) { qy = qy - f; y = y - f; qx = x - f; x = x + f; }
-      out += `<rect x="${qx}" y="${qy}" width="${f}" height="${f}" fill="rgba(245,158,11,0.03)" stroke="rgba(245,158,11,0.18)" stroke-width="1.5"/>`;
-      out += `<text x="${qx + f/2}" y="${qy + f/2 + 4}" text-anchor="middle" font-size="10" fill="#64748b" font-weight="600">${fib[i]}</text>`;
-      let destX = qx, destY = qy;
-      if (dir === 0) { destX = qx + f; destY = qy + f; if(i===0) path = `M ${qx} ${qy + f}`; }
-      else if (dir === 1) { destX = qx; destY = qy + f; }
-      else if (dir === 2) { destX = qx; destY = qy; }
-      else if (dir === 3) { destX = qx + f; destY = qy; }
-      path += ` A ${f} ${f} 0 0 0 ${destX} ${destY}`;
+
+      steps.push({ qx, qy, f, dir, fibVal: fib[i] });
+
+      minX = Math.min(minX, qx);
+      maxX = Math.max(maxX, qx + f);
+      minY = Math.min(minY, qy);
+      maxY = Math.max(maxY, qy + f);
+
       dir = (dir + 1) % 4;
     }
+
+    // Calcula escala e offset para centralizar perfeitamente no SVG de 500x500
+    const margin = 40;
+    const W_raw = maxX - minX;
+    const H_raw = maxY - minY;
+    const scale = W_raw > 0 && H_raw > 0 ? Math.min((500 - 2 * margin) / W_raw, (500 - 2 * margin) / H_raw) : 1;
+    const offsetX = (500 - W_raw * scale) / 2 - minX * scale;
+    const offsetY = (500 - H_raw * scale) / 2 - minY * scale;
+
+    let out = "";
+    let path = "";
+
+    steps.forEach((step, i) => {
+      const qx_s = step.qx * scale + offsetX;
+      const qy_s = step.qy * scale + offsetY;
+      const f_s = step.f * scale;
+      const d_dir = step.dir;
+      
+      out += `<rect x="${qx_s.toFixed(1)}" y="${qy_s.toFixed(1)}" width="${f_s.toFixed(1)}" height="${f_s.toFixed(1)}" fill="rgba(245,158,11,0.03)" stroke="rgba(245,158,11,0.18)" stroke-width="1.5"/>`;
+      out += `<text x="${(qx_s + f_s/2).toFixed(1)}" y="${(qy_s + f_s/2 + 4).toFixed(1)}" text-anchor="middle" font-size="${Math.min(12, Math.max(7, f_s * 0.3)).toFixed(1)}" fill="#64748b" font-weight="600">${step.fibVal}</text>`;
+
+      let destX = step.qx;
+      let destY = step.qy;
+      if (d_dir === 0) { 
+        destX = step.qx + step.f; 
+        destY = step.qy + step.f; 
+        if (i === 0) {
+          const startX = step.qx * scale + offsetX;
+          const startY = (step.qy + step.f) * scale + offsetY;
+          path = `M ${startX.toFixed(1)} ${startY.toFixed(1)}`; 
+        }
+      }
+      else if (d_dir === 1) { destX = step.qx; destY = step.qy + step.f; }
+      else if (d_dir === 2) { destX = step.qx; destY = step.qy; }
+      else if (d_dir === 3) { destX = step.qx + step.f; destY = step.qy; }
+
+      const destX_s = destX * scale + offsetX;
+      const destY_s = destY * scale + offsetY;
+
+      path += ` A ${f_s.toFixed(1)} ${f_s.toFixed(1)} 0 0 0 ${destX_s.toFixed(1)} ${destY_s.toFixed(1)}`;
+    });
+
     svg.innerHTML = `
       <rect x="0" y="0" width="500" height="500" fill="rgba(0,0,0,0.15)" rx="24"/>
       ${out}
-      <path d="${path}" fill="none" stroke="var(--color-yellow)" stroke-width="3" stroke-linecap="round" style="filter:drop-shadow(0 0 5px rgba(245,158,11,0.45))"/>
+      ${path ? `<path d="${path}" fill="none" stroke="var(--color-yellow)" stroke-width="3" stroke-linecap="round" style="filter:drop-shadow(0 0 5px rgba(245,158,11,0.45))"/>` : ""}
     `;
   }
 };
