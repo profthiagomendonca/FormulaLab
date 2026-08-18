@@ -10,6 +10,23 @@ let state = {};
 let disp = {};
 let needsDraw = true;
 let rafId = null;
+let activeCategory = "Matemática";
+
+window.selectCategory = function(name) {
+  activeCategory = name;
+  const matBtn = $("btn-cat-mat");
+  const fisBtn = $("btn-cat-fis");
+  if (matBtn && fisBtn) {
+    matBtn.classList.toggle("active", name === "Matemática");
+    fisBtn.classList.toggle("active", name === "Física");
+  }
+  const matSec = $("section-Matemática");
+  const fisSec = $("section-Física");
+  if (matSec && fisSec) {
+    matSec.style.display = name === "Matemática" ? "block" : "none";
+    fisSec.style.display = name === "Física" ? "block" : "none";
+  }
+};
 
 // Renders the main category menu
 function showMenu() {
@@ -26,12 +43,18 @@ function showMenu() {
       <p class="eyebrow">Simulações Científicas</p>
       <h1>Fórmulas Interativas</h1>
       <p class="sub">Explore física e matemática visualmente. Ajuste os parâmetros e veja os efeitos imediatos nos gráficos e nas animações.</p>
+      
+      <div class="category-selector">
+        <button id="btn-cat-mat" class="cat-btn ${activeCategory === "Matemática" ? "active" : ""}" onclick="selectCategory('Matemática')">Matemática</button>
+        <button id="btn-cat-fis" class="cat-btn ${activeCategory === "Física" ? "active" : ""}" onclick="selectCategory('Física')">Física</button>
+      </div>
     </div>
   `;
 
   for (const cat of CATS) {
+    const isVisible = cat.name === activeCategory;
     html += `
-      <div class="section">
+      <div id="section-${cat.name}" class="section" style="display: ${isVisible ? 'block' : 'none'}">
         <h2>${cat.name}</h2>
         <div class="menu-grid">
     `;
