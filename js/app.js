@@ -186,6 +186,7 @@ function showMenu() {
         </div>
       </div>
     `;
+    }
   }
   
   app.innerHTML = html;
