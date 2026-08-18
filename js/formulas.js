@@ -729,15 +729,16 @@ PAGES.goldenSpiral = {
   color: "var(--color-yellow)",
   always: true,
   fields: [
-    { key: "n", label: "Nível/Iterações", color: "var(--color-yellow)", min: 1, max: 8, step: 1, def: 6 }
+    { key: "n", label: "Nível/Iterações", color: "var(--color-yellow)", min: 1, max: 10, step: 1, def: 6 }
   ],
   live(s) {
-    const fib = [1, 1, 2, 3, 5, 8, 13, 21, 34];
-    return `Nível n = ${s.n} | Sequência: <b>${fib.slice(0, s.n).join(", ")}</b><br>Razão F<sub>n</sub>/F<sub>n-1</sub> = <b>${fmt(fib[s.n-1]/fib[Math.max(0, s.n-2)])}</b>`;
+    const fib = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987];
+    const n = Math.round(s.n);
+    return `Nível n = ${n} | Sequência: <b>${fib.slice(0, n).join(", ")}</b><br>Razão F<sub>n</sub>/F<sub>n-1</sub> = <b>${fmt(fib[n-1]/fib[Math.max(0, n-2)])}</b>`;
   },
   draw(svg, s) {
     svg.setAttribute("viewBox", "0 0 500 500");
-    const fib = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144];
+    const fib = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987];
     const n = Math.max(2, Math.round(s.n));
     const sizes = [];
     for (let i = n - 2; i >= 1; i--) sizes.push(fib[i]);
