@@ -777,7 +777,7 @@ PAGES.goldenSpiral = {
     });
     svg.innerHTML = `
       <rect x="0" y="0" width="500" height="500" fill="rgba(0,0,0,0.15)" rx="24"/>
-      <text x="250" y="38" text-anchor="middle" font-size="15" font-weight="800" fill="var(--color-yellow)" font-family="var(--font-title)">a/b = (a + b)/a = φ ≈ 1,618</text>
+      <text x="250" y="42" text-anchor="middle" font-size="19" font-weight="800" fill="var(--color-yellow)" font-family="var(--font-title)">a/b = (a + b)/a = φ ≈ 1,618</text>
       ${out}
       ${path ? `<path d="${path}" fill="none" stroke="var(--color-yellow)" stroke-width="3" stroke-linecap="round" style="filter:drop-shadow(0 0 5px rgba(245,158,11,0.45))"/>` : ""}
     `;
