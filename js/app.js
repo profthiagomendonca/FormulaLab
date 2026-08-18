@@ -28,6 +28,37 @@ window.selectCategory = function(name) {
   }
 };
 
+window.updateMascot = function(text, expression) {
+  const mascotText = $("mascot-text");
+  const mascotEyes = $("mascot-eyes");
+  if (mascotText) mascotText.innerHTML = text;
+  if (mascotEyes) {
+    let eyesHTML = "";
+    if (expression === "happy") {
+      eyesHTML = `
+        <path d="M 15 19 Q 19 15 23 19" stroke="var(--color-cyan)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M 27 19 Q 31 15 35 19" stroke="var(--color-cyan)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      `;
+    } else if (expression === "surprised") {
+      eyesHTML = `
+        <circle cx="19" cy="20" r="3.5" fill="var(--color-cyan)"/>
+        <circle cx="31" cy="20" r="3.5" fill="var(--color-cyan)"/>
+      `;
+    } else if (expression === "thinking") {
+      eyesHTML = `
+        <line x1="15" y1="21" x2="23" y2="18" stroke="var(--color-cyan)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="27" y1="18" x2="35" y2="21" stroke="var(--color-cyan)" stroke-width="2.5" stroke-linecap="round"/>
+      `;
+    } else {
+      eyesHTML = `
+        <rect x="15" y="19" width="7" height="3.5" rx="1.75" fill="var(--color-cyan)"/>
+        <rect x="28" y="19" width="7" height="3.5" rx="1.75" fill="var(--color-cyan)"/>
+      `;
+    }
+    mascotEyes.innerHTML = eyesHTML;
+  }
+};
+
 // Renders the main category menu
 function showMenu() {
   current = null;
@@ -137,6 +168,33 @@ function showPage(id) {
       <div class="panel">
         <div id="live" class="live"></div>
         <div id="controls"></div>
+        
+        <div id="mascot-container" class="mascot-box">
+          <div class="mascot-avatar">
+            <svg viewBox="0 0 50 50" width="50" height="50">
+              <!-- Antena -->
+              <line x1="25" y1="12" x2="25" y2="4" stroke="var(--color-blue)" stroke-width="2"/>
+              <circle cx="25" cy="4" r="3" fill="var(--color-cyan)"/>
+              <!-- Orelhas -->
+              <rect x="6" y="20" width="4" height="8" rx="2" fill="var(--text-muted)"/>
+              <rect x="40" y="20" width="4" height="8" rx="2" fill="var(--text-muted)"/>
+              <!-- Cabeça -->
+              <rect x="9" y="12" width="32" height="24" rx="8" fill="var(--bg-control)" stroke="var(--border-color)" stroke-width="2"/>
+              <!-- Face Plate -->
+              <rect x="12" y="15" width="26" height="18" rx="5" fill="#0d1424" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <!-- Olhos -->
+              <g id="mascot-eyes">
+                <rect x="15" y="19" width="7" height="3.5" rx="1.75" fill="var(--color-cyan)"/>
+                <rect x="28" y="19" width="7" height="3.5" rx="1.75" fill="var(--color-cyan)"/>
+              </g>
+              <!-- Corpo -->
+              <path d="M 18 36 L 15 44 A 3 3 0 0 0 18 47 L 32 47 A 3 3 0 0 0 35 44 L 32 36 Z" fill="var(--bg-control)" stroke="var(--border-color)" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="mascot-bubble">
+            <p id="mascot-text">Olá! Eu sou o Labot. Ajuste os controles acima e veja a mágica acontecer!</p>
+          </div>
+        </div>
       </div>
     </div>
   `;
@@ -213,6 +271,14 @@ function syncPage() {
     }
   }
   $("live").innerHTML = current.live(state);
+  
+  // Atualiza as dicas do mascote dinamicamente com base nas interações
+  if (current.mascot) {
+    const info = current.mascot(state);
+    window.updateMascot(info.text, info.expression);
+  } else {
+    window.updateMascot("Olá! Eu sou o Labot. Ajuste os controles acima e veja a mágica acontecer!", "normal");
+  }
 }
 
 // Cycle of drawing using interpolation for smooth transitions

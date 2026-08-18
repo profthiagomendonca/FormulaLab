@@ -700,3 +700,51 @@ svg {
     height: 16px;
   }
 }
+
+/* ==========================================================================
+   MASCOT - LABOT
+   ========================================================================== */
+.mascot-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-control);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 16px 20px;
+  margin-top: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.mascot-avatar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 6px var(--color-cyan));
+}
+
+.mascot-avatar svg {
+  overflow: visible;
+}
+
+.mascot-bubble {
+  flex-grow: 1;
+  text-align: left;
+}
+
+#mascot-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+#mascot-text b {
+  color: var(--color-cyan);
+}
+
+.glow {
+  filter: drop-shadow(0 0 4px var(--color-cyan));
+}

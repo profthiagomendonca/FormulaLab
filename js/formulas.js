@@ -707,6 +707,16 @@ PAGES.angleTypes = {
     }
     return txt;
   },
+  mascot(s) {
+    const ang = Math.round(s.ang);
+    if (ang === 90) return { text: "Encontramos o ângulo reto! Ele é o ângulo mais famoso da geometria.", expression: "happy" };
+    if (ang === 180) return { text: "Esse é o ângulo raso! Ele forma uma linha reta perfeita.", expression: "normal" };
+    if (ang === 360) return { text: "Uma volta completa de 360 graus! Voltamos ao início.", expression: "surprised" };
+    if (ang > 0 && ang < 90) return { text: `Temos um ângulo de <b>${ang}°</b> (menor que 90°). É um ângulo <b>Agudo</b>!`, expression: "normal" };
+    if (ang > 90 && ang < 180) return { text: `Com <b>${ang}°</b>, ele é maior que 90° e menor que 180°. É um ângulo <b>Obtuso</b>!`, expression: "thinking" };
+    if (ang > 180 && ang < 360) return { text: `Este é um ângulo côncavo ou reflexo, maior que meia-volta!`, expression: "thinking" };
+    return { text: "Ângulo nulo! A abertura é zero.", expression: "thinking" };
+  },
   draw(svg, s) {
     svg.setAttribute("viewBox", "0 0 500 500");
     const ang = Math.round(s.ang);
@@ -795,6 +805,11 @@ PAGES.square = {
     { key: "l", label: "Lado (L)", color: "var(--color-blue)", min: 1, max: 15, step: 0.1, def: 8 }
   ],
   update(s) { s.A = s.l * s.l; s.P = 4 * s.l; },
+  mascot(s) {
+    if (s.l < 3) return { text: "Esse é um quadrado bem pequeno. Sua área e perímetro são baixos!", expression: "thinking" };
+    if (s.l > 12) return { text: "Uau, que gigante! Veja como a área cresce rápido com o quadrado do lado!", expression: "surprised" };
+    return { text: "Um quadrado tem todos os lados iguais. A área é o lado elevado ao quadrado!", expression: "normal" };
+  },
   live(s) { return `Área A = <span class="a">${fmt(s.l)}</span>² = <b>${fmt(s.A)}</b><br>Perímetro P = 4·<span class="a">${fmt(s.l)}</span> = <b>${fmt(s.P)}</b>`; },
   draw(svg, s) {
     const W = 500, H = 500, M = 50;
@@ -825,6 +840,12 @@ PAGES.goldenSpiral = {
     const fib = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987];
     const n = Math.round(s.n);
     return `Nível n = ${n} | Sequência: <b>${fib.slice(0, n).join(", ")}</b><br>Razão F<sub>n</sub>/F<sub>n-1</sub> = <b>${fmt(fib[n-1]/fib[Math.max(0, n-2)])}</b>`;
+  },
+  mascot(s) {
+    const n = Math.round(s.n);
+    if (n <= 3) return { text: "Com poucas iterações, vemos apenas o início da sequência de Fibonacci.", expression: "thinking" };
+    if (n >= 8) return { text: "Veja que espiral fascinante! Ela se assemelha a uma galáxia ou a um furacão.", expression: "surprised" };
+    return { text: "A espiral é formada por arcos conectando os quadrados com lados da sequência de Fibonacci.", expression: "normal" };
   },
   draw(svg, s) {
     svg.setAttribute("viewBox", "0 0 500 500");
@@ -891,6 +912,12 @@ PAGES.quedaLivre = {
   ],
   update(s) { s.h = 0.5 * s.g * s.t * s.t; s.v = s.g * s.t; },
   live(s) { return `Distância h = ½ · ${fmt(s.g)} · <span class="b">${fmt(s.t)}²</span> = <b>${fmt(s.h)} m</b><br>Velocidade v = ${fmt(s.g)} · <span class="b">${fmt(s.t)}</span> = <b>${fmt(s.v)} m/s</b>`; },
+  mascot(s) {
+    if (s.t === 0) return { text: "Tempo zero! O objeto ainda não iniciou seu movimento de queda.", expression: "normal" };
+    if (s.g < 3) return { text: "Com gravidade tão fraca, a queda livre parece que está em câmera lenta!", expression: "surprised" };
+    if (s.g > 20) return { text: "Que atração forte! O objeto atinge velocidade extrema em segundos.", expression: "surprised" };
+    return { text: "Em queda livre, a distância aumenta de forma quadrática com o tempo!", expression: "happy" };
+  },
   draw(svg, s) {
     svg.setAttribute("viewBox", "0 0 480 480");
     const top = 50, bottom = 410, x = 160;
