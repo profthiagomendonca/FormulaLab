@@ -764,13 +764,19 @@ PAGES.goldenSpiral = {
       dir = (dir + 1) % 4;
     }
 
-    // Calcula escala e offset para centralizar perfeitamente no SVG de 500x500
-    const margin = 40;
+    // Ajusta área útil deixando margem no topo para a fórmula
+    const marginTop = 65;
+    const marginBottom = 35;
+    const marginX = 35;
     const W_raw = maxX - minX;
     const H_raw = maxY - minY;
-    const scale = W_raw > 0 && H_raw > 0 ? Math.min((500 - 2 * margin) / W_raw, (500 - 2 * margin) / H_raw) : 1;
+    
+    const scaleX = (500 - 2 * marginX) / W_raw;
+    const scaleY = (500 - (marginTop + marginBottom)) / H_raw;
+    const scale = W_raw > 0 && H_raw > 0 ? Math.min(scaleX, scaleY) : 1;
+    
     const offsetX = (500 - W_raw * scale) / 2 - minX * scale;
-    const offsetY = (500 - H_raw * scale) / 2 - minY * scale;
+    const offsetY = marginTop + ((500 - (marginTop + marginBottom)) - H_raw * scale) / 2 - minY * scale;
 
     let out = "";
     let path = "";
@@ -781,34 +787,59 @@ PAGES.goldenSpiral = {
       const f_s = step.f * scale;
       const d_dir = step.dir;
       
-      out += `<rect x="${qx_s.toFixed(1)}" y="${qy_s.toFixed(1)}" width="${f_s.toFixed(1)}" height="${f_s.toFixed(1)}" fill="rgba(245,158,11,0.03)" stroke="rgba(245,158,11,0.18)" stroke-width="1.5"/>`;
-      out += `<text x="${(qx_s + f_s/2).toFixed(1)}" y="${(qy_s + f_s/2 + 4).toFixed(1)}" text-anchor="middle" font-size="${Math.min(12, Math.max(7, f_s * 0.3)).toFixed(1)}" fill="#64748b" font-weight="600">${step.fibVal}</text>`;
+      // Desenha o quadrado em tom rose/vermelho
+      out += `<rect x="${qx_s.toFixed(1)}" y="${qy_s.toFixed(1)}" width="${f_s.toFixed(1)}" height="${f_s.toFixed(1)}" fill="none" stroke="#f43f5e" stroke-width="1.3"/>`;
+      
+      // Desenha o círculo inscrito em tom ciano
+      const circleCX = qx_s + f_s / 2;
+      const circleCY = qy_s + f_s / 2;
+      const circleR = f_s / 2;
+      out += `<circle cx="${circleCX.toFixed(1)}" cy="${circleCY.toFixed(1)}" r="${circleR.toFixed(1)}" fill="none" stroke="#06b6d4" stroke-width="1" opacity="0.65"/>`;
+      
+      // Número da sequência de Fibonacci no centro
+      out += `<text x="${(qx_s + f_s/2).toFixed(1)}" y="${(qy_s + f_s/2 + 4).toFixed(1)}" text-anchor="middle" font-size="${Math.min(12, Math.max(7, f_s * 0.3)).toFixed(1)}" fill="#475569" font-weight="600">${step.fibVal}</text>`;
 
-      let destX = step.qx;
-      let destY = step.qy;
+      let startX = 0, startY = 0;
+      let destX = 0, destY = 0;
+      
       if (d_dir === 0) { 
-        destX = step.qx + step.f; 
-        destY = step.qy + step.f; 
-        if (i === 0) {
-          const startX = step.qx * scale + offsetX;
-          const startY = (step.qy + step.f) * scale + offsetY;
-          path = `M ${startX.toFixed(1)} ${startY.toFixed(1)}`; 
-        }
+        startX = step.qx; startY = step.qy;
+        destX = step.qx + step.f; destY = step.qy + step.f; 
       }
-      else if (d_dir === 1) { destX = step.qx; destY = step.qy + step.f; }
-      else if (d_dir === 2) { destX = step.qx; destY = step.qy; }
-      else if (d_dir === 3) { destX = step.qx + step.f; destY = step.qy; }
+      else if (d_dir === 1) { 
+        startX = step.qx + step.f; startY = step.qy;
+        destX = step.qx; destY = step.qy + step.f; 
+      }
+      else if (d_dir === 2) { 
+        startX = step.qx + step.f; startY = step.qy + step.f;
+        destX = step.qx; destY = step.qy; 
+      }
+      else if (d_dir === 3) { 
+        startX = step.qx; startY = step.qy + step.f;
+        destX = step.qx + step.f; destY = step.qy; 
+      }
 
+      const startX_s = startX * scale + offsetX;
+      const startY_s = startY * scale + offsetY;
       const destX_s = destX * scale + offsetX;
       const destY_s = destY * scale + offsetY;
 
-      path += ` A ${f_s.toFixed(1)} ${f_s.toFixed(1)} 0 0 0 ${destX_s.toFixed(1)} ${destY_s.toFixed(1)}`;
+      if (i === 0) {
+        path = `M ${startX_s.toFixed(1)} ${startY_s.toFixed(1)}`; 
+      }
+      // sweep-flag = 1 para curva contínua no sentido horário em coordenadas com Y para baixo
+      path += ` A ${f_s.toFixed(1)} ${f_s.toFixed(1)} 0 0 1 ${destX_s.toFixed(1)} ${destY_s.toFixed(1)}`;
     });
 
     svg.innerHTML = `
-      <rect x="0" y="0" width="500" height="500" fill="rgba(0,0,0,0.15)" rx="24"/>
+      <!-- Fundo branco limpo, conforme o ideal -->
+      <rect x="0" y="0" width="500" height="500" fill="#ffffff" rx="24"/>
+      
+      <!-- Fórmula da Proporção Áurea no topo -->
+      <text x="250" y="38" text-anchor="middle" font-size="15" font-weight="800" fill="#ef4444" font-family="var(--font-title)">a/b = (a + b)/a = φ ≈ 1,618</text>
+      
       ${out}
-      ${path ? `<path d="${path}" fill="none" stroke="var(--color-yellow)" stroke-width="3" stroke-linecap="round" style="filter:drop-shadow(0 0 5px rgba(245,158,11,0.45))"/>` : ""}
+      ${path ? `<path d="${path}" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round"/>` : ""}
     `;
   }
 };
