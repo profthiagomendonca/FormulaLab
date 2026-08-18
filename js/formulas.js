@@ -787,17 +787,17 @@ PAGES.goldenSpiral = {
       const f_s = step.f * scale;
       const d_dir = step.dir;
       
-      // Desenha o quadrado em tom rose/vermelho
-      out += `<rect x="${qx_s.toFixed(1)}" y="${qy_s.toFixed(1)}" width="${f_s.toFixed(1)}" height="${f_s.toFixed(1)}" fill="none" stroke="#f43f5e" stroke-width="1.3"/>`;
+      // Desenha o quadrado em tom amarelo suave, em harmonia com o tema escuro
+      out += `<rect x="${qx_s.toFixed(1)}" y="${qy_s.toFixed(1)}" width="${f_s.toFixed(1)}" height="${f_s.toFixed(1)}" fill="rgba(245,158,11,0.03)" stroke="rgba(245,158,11,0.18)" stroke-width="1.5"/>`;
       
-      // Desenha o círculo inscrito em tom ciano
+      // Desenha o círculo inscrito em tom ciano sutil para destacar a matemática
       const circleCX = qx_s + f_s / 2;
       const circleCY = qy_s + f_s / 2;
       const circleR = f_s / 2;
-      out += `<circle cx="${circleCX.toFixed(1)}" cy="${circleCY.toFixed(1)}" r="${circleR.toFixed(1)}" fill="none" stroke="#06b6d4" stroke-width="1" opacity="0.65"/>`;
+      out += `<circle cx="${circleCX.toFixed(1)}" cy="${circleCY.toFixed(1)}" r="${circleR.toFixed(1)}" fill="none" stroke="rgba(6,182,212,0.18)" stroke-width="1.2"/>`;
       
       // Número da sequência de Fibonacci no centro
-      out += `<text x="${(qx_s + f_s/2).toFixed(1)}" y="${(qy_s + f_s/2 + 4).toFixed(1)}" text-anchor="middle" font-size="${Math.min(12, Math.max(7, f_s * 0.3)).toFixed(1)}" fill="#475569" font-weight="600">${step.fibVal}</text>`;
+      out += `<text x="${(qx_s + f_s/2).toFixed(1)}" y="${(qy_s + f_s/2 + 4).toFixed(1)}" text-anchor="middle" font-size="${Math.min(12, Math.max(7, f_s * 0.3)).toFixed(1)}" fill="#64748b" font-weight="600">${step.fibVal}</text>`;
 
       let startX = 0, startY = 0;
       let destX = 0, destY = 0;
@@ -832,14 +832,14 @@ PAGES.goldenSpiral = {
     });
 
     svg.innerHTML = `
-      <!-- Fundo branco limpo, conforme o ideal -->
-      <rect x="0" y="0" width="500" height="500" fill="#ffffff" rx="24"/>
+      <!-- Retorna ao fundo escuro original integrado ao app -->
+      <rect x="0" y="0" width="500" height="500" fill="rgba(0,0,0,0.15)" rx="24"/>
       
       <!-- Fórmula da Proporção Áurea no topo -->
-      <text x="250" y="38" text-anchor="middle" font-size="15" font-weight="800" fill="#ef4444" font-family="var(--font-title)">a/b = (a + b)/a = φ ≈ 1,618</text>
+      <text x="250" y="38" text-anchor="middle" font-size="15" font-weight="800" fill="var(--color-yellow)" font-family="var(--font-title)">a/b = (a + b)/a = φ ≈ 1,618</text>
       
       ${out}
-      ${path ? `<path d="${path}" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="round"/>` : ""}
+      ${path ? `<path d="${path}" fill="none" stroke="var(--color-yellow)" stroke-width="3" stroke-linecap="round" style="filter:drop-shadow(0 0 5px rgba(245,158,11,0.45))"/>` : ""}
     `;
   }
 };
