@@ -25,23 +25,23 @@ window.updateMascot = function(text, expression) {
     let eyesHTML = "";
     if (expression === "happy") {
       eyesHTML = `
-        <path d="M 15 19 Q 19 15 23 19" stroke="var(--color-cyan)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        <path d="M 27 19 Q 31 15 35 19" stroke="var(--color-cyan)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M 19 20.5 Q 22.5 16.5 26 20.5" stroke="#06b6d4" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M 34 20.5 Q 37.5 16.5 41 20.5" stroke="#06b6d4" stroke-width="2.5" fill="none" stroke-linecap="round"/>
       `;
     } else if (expression === "surprised") {
       eyesHTML = `
-        <circle cx="19" cy="20" r="3.5" fill="var(--color-cyan)"/>
-        <circle cx="31" cy="20" r="3.5" fill="var(--color-cyan)"/>
+        <circle cx="22.5" cy="20.5" r="3.5" fill="#06b6d4"/>
+        <circle cx="37.5" cy="20.5" r="3.5" fill="#06b6d4"/>
       `;
     } else if (expression === "thinking") {
       eyesHTML = `
-        <line x1="15" y1="21" x2="23" y2="18" stroke="var(--color-cyan)" stroke-width="2.5" stroke-linecap="round"/>
-        <line x1="27" y1="18" x2="35" y2="21" stroke="var(--color-cyan)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="19" y1="21.5" x2="26" y2="18.5" stroke="#06b6d4" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="34" y1="18.5" x2="41" y2="21.5" stroke="#06b6d4" stroke-width="2.5" stroke-linecap="round"/>
       `;
     } else {
       eyesHTML = `
-        <rect x="15" y="19" width="7" height="3.5" rx="1.75" fill="var(--color-cyan)"/>
-        <rect x="28" y="19" width="7" height="3.5" rx="1.75" fill="var(--color-cyan)"/>
+        <rect x="19" y="19" width="7" height="3.5" rx="1.75" fill="#06b6d4"/>
+        <rect x="34" y="19" width="7" height="3.5" rx="1.75" fill="#06b6d4"/>
       `;
     }
     mascotEyes.innerHTML = eyesHTML;
@@ -309,40 +309,66 @@ function showPage(id) {
         
         <div id="mascot-container" class="mascot-box">
           <div class="mascot-avatar">
-            <svg viewBox="0 0 50 50" width="55" height="55" style="overflow: visible;">
-              <!-- Cabelo Fofo do Einstein (Nuvens de Círculos) -->
-              <!-- Lado Esquerdo -->
-              <circle cx="7" cy="17" r="4.5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
-              <circle cx="5" cy="23" r="5.5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
-              <circle cx="8" cy="29" r="4" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
-              <!-- Lado Direito -->
-              <circle cx="43" cy="17" r="4.5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
-              <circle cx="45" cy="23" r="5.5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
-              <circle cx="42" cy="29" r="4" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
-              <!-- Topo -->
-              <circle cx="19" cy="9" r="4.5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
-              <circle cx="25" cy="8" r="5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
-              <circle cx="31" cy="9" r="4.5" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
+            <svg viewBox="0 0 60 60" width="60" height="60" style="overflow: visible;">
+              <defs>
+                <!-- Gradiente Metálico para o Corpo/Cabeça -->
+                <linearGradient id="metal" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffffff"/>
+                  <stop offset="60%" stop-color="#f1f5f9"/>
+                  <stop offset="100%" stop-color="#cbd5e1"/>
+                </linearGradient>
+                
+                <!-- Gradiente da Face Glassmorphic -->
+                <linearGradient id="screen" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#0b0f19"/>
+                  <stop offset="100%" stop-color="#1e293b"/>
+                </linearGradient>
+                
+                <!-- Brilho Neon para Elementos Ciano -->
+                <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="1.5" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
 
-              <!-- Antena -->
-              <line x1="25" y1="8" x2="25" y2="2" stroke="var(--color-blue)" stroke-width="1.5"/>
-              <circle cx="25" cy="2" r="2" fill="var(--color-cyan)"/>
-              <!-- Orelhas -->
-              <rect x="5" y="20" width="4" height="8" rx="2" fill="var(--text-muted)"/>
-              <rect x="41" y="20" width="4" height="8" rx="2" fill="var(--text-muted)"/>
-              <!-- Cabeça -->
-              <rect x="9" y="12" width="32" height="24" rx="8" fill="var(--bg-control)" stroke="var(--border-color)" stroke-width="2"/>
-              <!-- Face Plate -->
-              <rect x="12" y="15" width="26" height="18" rx="5" fill="#0d1424" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-              <!-- Olhos -->
-              <g id="mascot-eyes">
-                <rect x="15" y="19" width="7" height="3.5" rx="1.75" fill="var(--color-cyan)"/>
-                <rect x="28" y="19" width="7" height="3.5" rx="1.75" fill="var(--color-cyan)"/>
+              <!-- Cabelo Cientista Louco (Spiky/Einstein Style) -->
+              <path d="M 12 15 C 8 8, 3 13, 5 19 C 1 20, 0 25, 4 28 C 1 31, 3 35, 8 32 C 12 35, 14 31, 13 28" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+              <path d="M 48 15 C 52 8, 57 13, 55 19 C 59 20, 60 25, 56 28 C 59 31, 57 35, 52 32 C 48 35, 46 31, 47 28" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+              <path d="M 18 10 C 14 3, 22 2, 25 7 C 28 2, 36 3, 35 10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+              
+              <!-- Antena com LED Ciano -->
+              <line x1="30" y1="9" x2="30" y2="3" stroke="#94a3b8" stroke-width="2"/>
+              <circle cx="30" cy="3" r="2.5" fill="#06b6d4" filter="url(#neon-glow)"/>
+
+              <!-- Orelhas Laterais -->
+              <rect x="11" y="21" width="3" height="7" rx="1.5" fill="#64748b"/>
+              <rect x="46" y="21" width="3" height="7" rx="1.5" fill="#64748b"/>
+
+              <!-- Cabeça Principal -->
+              <rect x="13" y="12" width="34" height="25" rx="10" fill="url(#metal)" stroke="#94a3b8" stroke-width="1.5"/>
+              
+              <!-- Tela da Face -->
+              <rect x="16" y="15" width="28" height="19" rx="6" fill="url(#screen)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              
+              <!-- Olhos Dinâmicos -->
+              <g id="mascot-eyes" filter="url(#neon-glow)">
+                <rect x="19" y="19" width="7" height="3.5" rx="1.75" fill="#06b6d4"/>
+                <rect x="34" y="19" width="7" height="3.5" rx="1.75" fill="#06b6d4"/>
               </g>
-              <!-- Bigode do Einstein -->
-              <path d="M 17 28 Q 25 24 33 28 Q 25 32 17 28 Z" fill="#f8fafc" stroke="var(--border-color)" stroke-width="1"/>
+
+              <!-- Reflexo de Vidro na Tela -->
+              <path d="M 17 16 L 43 16 A 1 1 0 0 1 44 17 L 44 20 L 16 23 L 16 17 A 1 1 0 0 1 17 16 Z" fill="rgba(255,255,255,0.06)"/>
+
+              <!-- Bigode Clássico de Einstein -->
+              <path d="M 21 28 Q 30 24 39 28 Q 30 33 21 28 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+
               <!-- Corpo -->
-              <path d="M 18 36 L 15 44 A 3 3 0 0 0 18 47 L 32 47 A 3 3 0 0 0 35 44 L 32 36 Z" fill="var(--bg-control)" stroke="var(--border-color)" stroke-width="2"/>
+              <rect x="27" y="36" width="6" height="4" fill="#64748b"/>
+              <path d="M 22 39 L 19 46 A 2 2 0 0 0 21 49 L 39 49 A 2 2 0 0 0 41 46 L 38 39 Z" fill="url(#metal)" stroke="#94a3b8" stroke-width="1.5"/>
+              <circle cx="30" cy="44" r="2.5" fill="#06b6d4" filter="url(#neon-glow)"/>
             </svg>
           </div>
           <div class="mascot-bubble">
